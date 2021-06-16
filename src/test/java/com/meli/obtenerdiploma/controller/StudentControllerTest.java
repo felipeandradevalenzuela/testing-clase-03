@@ -1,7 +1,6 @@
 package com.meli.obtenerdiploma.controller;
 
-import com.meli.obtenerdiploma.exception.StudentNotFoundException;
-import com.meli.obtenerdiploma.service.IObtenerDiplomaService;
+import com.meli.obtenerdiploma.service.IStudentService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -16,7 +15,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
-import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -25,14 +23,15 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @ExtendWith(MockitoExtension.class)
-class ObtenerDiplomaControllerTest {
+class StudentControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
     @Mock
-    IObtenerDiplomaService service;
+    IStudentService studentService;
     @InjectMocks
-    private ObtenerDiplomaController obtenerDiplomaController;
+    StudentController studentController;
+
 
     @BeforeEach
     void setUp() {
@@ -43,29 +42,42 @@ class ObtenerDiplomaControllerTest {
     }
 
     @Test
-    void analyzeScoresRequestCorrectoTest() throws Exception {
+    void registerStudent() {
+
+    }
+
+    @Test
+    void getStudent() throws Exception {
         MvcResult mvcResult =
-                this.mockMvc.perform(MockMvcRequestBuilders.get("/analyzeScores/{studentId}",1))
-                        .andDo(print()).andExpect(status().isOk())
-                        .andExpect(MockMvcResultMatchers. jsonPath("$.message" ).value( "El alumno Alumno 1 ha obtenido un promedio de 4.33. Puedes mejorar.")).andReturn();
+                this.mockMvc.perform(MockMvcRequestBuilders.get("/student/getStudent/{id}",2))
+                        .andDo(print())
+                        .andExpect(status().isOk())
+                        //.andExpect(MockMvcResultMatchers. jsonPath("$.message" ).value( "El alumno Alumno 1 ha obtenido un promedio de 4.33. Puedes mejorar."))
+                        .andReturn();
         assertEquals("application/json",mvcResult.getResponse().getContentType()) ;
     }
 
     @Test
-    void analyzeScoresRequestErroneoTest() throws Exception {
-        MvcResult mvcResult =
-                this.mockMvc.perform(MockMvcRequestBuilders.get("/analyzeScores/{studentId}",10))
-                        .andDo(print()).andExpect(MockMvcResultMatchers.jsonPath("$.description").value("El alumno con Id 10 no se encuentra registrado."))
-                        .andReturn();
-        assertEquals(404,mvcResult.getResponse().getStatus()) ;
+    void modifyStudent() {
     }
 
     @Test
-    void analyzeScoresRequestTipoErroneoTest() throws Exception {
+    void removeStudent() throws Exception {
         MvcResult mvcResult =
-                this.mockMvc.perform(MockMvcRequestBuilders.get("/analyzeScores/{studentId}","test"))
+                this.mockMvc.perform(MockMvcRequestBuilders.get("/student/removeStudent/{id}",10))
                         .andDo(print())
+                        .andExpect(status().isOk())
                         .andReturn();
-        assertEquals(400,mvcResult.getResponse().getStatus()) ;
+        assertEquals("application/json",mvcResult.getResponse().getContentType()) ;
+    }
+
+    @Test
+    void listStudents() throws Exception {
+        MvcResult mvcResult =
+                this.mockMvc.perform(MockMvcRequestBuilders.get("/student/listStudents"))
+                        .andDo(print())
+                        .andExpect(status().isOk())
+                        .andReturn();
+        assertEquals("application/json",mvcResult.getResponse().getContentType()) ;
     }
 }

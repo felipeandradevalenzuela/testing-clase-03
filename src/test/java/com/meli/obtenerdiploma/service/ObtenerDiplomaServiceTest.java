@@ -107,4 +107,24 @@ class ObtenerDiplomaServiceTest {
         //Assert
         assertEquals(msg,actual.getMessage());
     }
+
+    /*/ACA INICIAS EL VALIDATOR
+    ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+    Validator validator = factory.getValidator();
+
+    StudentDTO student = new StudentDTO();
+        student.setStudentName("Tomi");
+        student.setId(5L);
+
+    SubjectDTO subjectOne = new SubjectDTO("Matematica" , 3.0);
+    List<SubjectDTO> listSubjects = new ArrayList<>();
+        listSubjects.add(subjectOne);
+        student.setSubjects(listSubjects);
+
+    //PASAS LISTA DE RESTRICCIONES
+    Set<ConstraintViolation<StudentDTO>> violations = validator.validate(student);
+        System.out.println(violations);
+
+    //Comprobas si tuvo restricciones o no
+        Assertions.assertTrue(violations.isEmpty());*/
 }

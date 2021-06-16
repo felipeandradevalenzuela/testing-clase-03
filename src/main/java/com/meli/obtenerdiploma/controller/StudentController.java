@@ -24,7 +24,7 @@ public class StudentController {
 
     @GetMapping("/getStudent/{id}")
     public StudentDTO getStudent(@PathVariable Long id) {
-        return this.studentService.read(id);
+        return studentService.read(id);
     }
 
     @PostMapping("/modifyStudent")
@@ -41,7 +41,7 @@ public class StudentController {
 
     @GetMapping("/listStudents")
     public Set<StudentDTO> listStudents() {
-        return this.studentService.getAll();
+        return studentService.getAll();
     }
 
 }
