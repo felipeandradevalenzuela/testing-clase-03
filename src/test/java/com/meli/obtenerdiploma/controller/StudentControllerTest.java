@@ -94,6 +94,7 @@ class StudentControllerTest {
         MvcResult mvcResult =
                 this.mockMvc.perform(MockMvcRequestBuilders.get("/student/getStudent/{id}",10))
                         .andDo(print())
+                        .andExpect(MockMvcResultMatchers. jsonPath("$.name" ).value( "StudentNotFoundException"))
                         .andExpect(MockMvcResultMatchers. jsonPath("$.description" ).value( "El alumno con Id 10 no se encuentra registrado."))
                         .andReturn();
         assertEquals(404,mvcResult.getResponse().getStatus()) ;
