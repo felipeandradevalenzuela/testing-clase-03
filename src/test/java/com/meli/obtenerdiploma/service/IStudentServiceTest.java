@@ -59,7 +59,6 @@ class IStudentServiceTest {
 
     }
 
-    @Disabled("Metodo de paso, no es necesario realizar unit test")
     @Test
     void read() {
         //Arrange

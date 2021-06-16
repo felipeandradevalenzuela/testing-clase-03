@@ -1,7 +1,11 @@
 package com.meli.obtenerdiploma.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.meli.obtenerdiploma.model.StudentDTO;
+import com.meli.obtenerdiploma.model.SubjectDTO;
 import com.meli.obtenerdiploma.service.IStudentService;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -11,10 +15,14 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -31,10 +39,17 @@ class StudentControllerTest {
     IStudentService studentService;
     @InjectMocks
     StudentController studentController;
+    private static StudentDTO student = new StudentDTO();
+    private static List<SubjectDTO> subject = new ArrayList();
 
-
-    @BeforeEach
-    void setUp() {
+    @BeforeAll
+    static void setUp() {
+        subject.add(new SubjectDTO("Algoritmos",4.0));
+        subject.add(new SubjectDTO("Cumbia",10.0));
+        subject.add(new SubjectDTO("Cocina",6.0));
+        student.setStudentName("Alumno 2");
+        student.setId(5L);
+        student.setSubjects(subject);
     }
 
     @AfterEach
@@ -42,33 +57,68 @@ class StudentControllerTest {
     }
 
     @Test
-    void registerStudent() {
-
+    void registerStudentCorrectoTest() throws Exception {
+        MvcResult mvcResult =
+                this.mockMvc.perform(MockMvcRequestBuilders.post("/student/registerStudent")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(new ObjectMapper().writeValueAsString(student)))
+                        .andDo(print())
+                        .andExpect(status().isOk())
+                        .andReturn();
+        assertEquals(200,mvcResult.getResponse().getStatus()) ;
     }
 
     @Test
-    void getStudent() throws Exception {
+    void registerStudentFallidoTest() throws Exception {
+        MvcResult mvcResult =
+                this.mockMvc.perform(MockMvcRequestBuilders.post("/student/registerStudent")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(new ObjectMapper().writeValueAsString(null)))
+                        .andDo(print())
+                        .andReturn();
+        assertEquals(400,mvcResult.getResponse().getStatus()) ;
+    }
+
+    @Test
+    void getStudentCorrectoTest() throws Exception {
         MvcResult mvcResult =
                 this.mockMvc.perform(MockMvcRequestBuilders.get("/student/getStudent/{id}",2))
                         .andDo(print())
                         .andExpect(status().isOk())
-                        //.andExpect(MockMvcResultMatchers. jsonPath("$.message" ).value( "El alumno Alumno 1 ha obtenido un promedio de 4.33. Puedes mejorar."))
                         .andReturn();
-        assertEquals("application/json",mvcResult.getResponse().getContentType()) ;
+        assertEquals(200,mvcResult.getResponse().getStatus()) ;
     }
 
     @Test
-    void modifyStudent() {
-    }
-
-    @Test
-    void removeStudent() throws Exception {
+    void getStudentIncorrectoTest() throws Exception {
         MvcResult mvcResult =
-                this.mockMvc.perform(MockMvcRequestBuilders.get("/student/removeStudent/{id}",10))
+                this.mockMvc.perform(MockMvcRequestBuilders.get("/student/getStudent/{id}",10))
+                        .andDo(print())
+                        .andExpect(MockMvcResultMatchers. jsonPath("$.description" ).value( "El alumno con Id 10 no se encuentra registrado."))
+                        .andReturn();
+        assertEquals(404,mvcResult.getResponse().getStatus()) ;
+    }
+
+    @Test
+    void modifyStudentCorrectoTest() throws Exception {
+        student.setStudentName("Alumno 2 modificado");
+        MvcResult mvcResult =
+                this.mockMvc.perform(MockMvcRequestBuilders.post("/student/modifyStudent")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(new ObjectMapper().writeValueAsString(student)))
+                        .andDo(print())
+                        .andReturn();
+        assertEquals(200,mvcResult.getResponse().getStatus()) ;
+    }
+
+    @Test
+    void removeStudentCorrectoTest() throws Exception {
+        MvcResult mvcResult =
+                this.mockMvc.perform(MockMvcRequestBuilders.get("/student/removeStudent/{id}",3))
                         .andDo(print())
                         .andExpect(status().isOk())
                         .andReturn();
-        assertEquals("application/json",mvcResult.getResponse().getContentType()) ;
+        assertEquals(200,mvcResult.getResponse().getStatus()) ;
     }
 
     @Test
